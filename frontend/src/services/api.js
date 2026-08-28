@@ -23,7 +23,6 @@ export const authAPI = {
 export const friendsAPI = {
   getFriends: () => api.get('/api/friends'),
   getPendingRequests: () => api.get('/api/friends/requests'),
-  searchUsers: (query) => api.get(`/api/friends/search?query=${query}`),
   sendRequest: (email) =>
     api.post('/api/friends/request', { email }),
   acceptRequest: (requestId) =>

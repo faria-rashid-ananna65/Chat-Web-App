@@ -15,7 +15,7 @@ export const useChat = () => {
       const res = await friendsAPI.getFriends()
       setFriends(res.data)
     } catch (error) {
-      console.error('Error fetching friends:', error)
+      // silent fail
     }
   }, [])
 
@@ -24,7 +24,7 @@ export const useChat = () => {
       const res = await groupsAPI.getGroups()
       setGroups(res.data)
     } catch (error) {
-      console.error('Error fetching groups:', error)
+      // silent fail
     }
   }, [])
 
@@ -33,7 +33,7 @@ export const useChat = () => {
       const res = await messagesAPI.getConversations()
       setConversations(res.data)
     } catch (error) {
-      console.error('Error fetching conversations:', error)
+      // silent fail
     }
   }, [])
 
@@ -46,7 +46,7 @@ export const useChat = () => {
           fetchFriends(),
         ])
       } catch (error) {
-        console.error('Error fetching data:', error)
+        // silent fail
       } finally {
         setLoading(false)
       }

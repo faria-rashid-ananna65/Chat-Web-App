@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { FiX, FiSearch, FiUserPlus, FiMail } from 'react-icons/fi'
+import { FiX, FiUserPlus, FiMail } from 'react-icons/fi'
 import { friendsAPI } from '../services/api'
 import toast from 'react-hot-toast'
 

@@ -64,7 +64,7 @@ const Sidebar = ({
       const res = await friendsAPI.getPendingRequests()
       setFriendRequests(res.data)
     } catch (error) {
-      console.error(error)
+      // silent fail
     } finally {
       setLoadingRequests(false)
     }

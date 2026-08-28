@@ -25,9 +25,6 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// Serve uploads folder
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/friends", friendRoutes);
@@ -38,6 +35,19 @@ app.use("/api/upload", uploadRoutes);
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "Server is running" });
+});
+
+// Serve frontend dist in production
+const frontendDist = path.join(__dirname, "../../frontend/dist");
+app.use(express.static(frontendDist));
+
+// SPA fallback - serve index.html for non-API routes
+app.get("*", (req, res) => {
+  if (!req.path.startsWith("/api")) {
+    res.sendFile(path.join(frontendDist, "index.html"));
+  } else {
+    res.status(404).json({ message: "API route not found" });
+  }
 });
 
 // Global error handler

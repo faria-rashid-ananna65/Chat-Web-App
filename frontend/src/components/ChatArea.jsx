@@ -13,7 +13,7 @@ import {
 import EmojiPicker from 'emoji-picker-react'
 import { useAuth } from '../context/AuthContext'
 import { useSocket } from '../context/SocketContext'
-import { messagesAPI } from '../services/api'
+import { messagesAPI, uploadAPI } from '../services/api'
 import MessageBubble from './MessageBubble'
 import ImagePreviewModal from './ImagePreviewModal'
 import { getAvatarColor } from '../utils/avatarColors'
@@ -60,7 +60,7 @@ const ChatArea = ({ chat, chatType, onBack }) => {
         setMessages(res.data)
         setTimeout(() => scrollToBottom(true), 50)
       } catch (error) {
-        console.error(error)
+        // silent fail
       } finally {
         setLoading(false)
       }
@@ -146,13 +146,8 @@ const ChatArea = ({ chat, chatType, onBack }) => {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/upload`, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || 'Upload failed')
+      const res = await uploadAPI.uploadFile(formData)
+      const data = res.data
       const messageData = { sender: user._id, content: '', messageType: type, fileUrl: data.url }
       if (chatType === 'private') {
         messageData.receiver = chat._id

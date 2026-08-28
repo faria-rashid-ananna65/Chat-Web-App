@@ -14,7 +14,7 @@ export const setupSocket = (server) => {
   });
 
   io.on("connection", async (socket) => {
-    console.log("New client connected:", socket.id);
+
 
     const userId = socket.handshake.query.userId;
 
@@ -132,7 +132,7 @@ export const setupSocket = (server) => {
     });
 
     socket.on("disconnect", async () => {
-      console.log("Client disconnected:", socket.id);
+
 
       if (userId) {
         onlineUsers.delete(userId);

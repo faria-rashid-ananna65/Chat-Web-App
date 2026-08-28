@@ -1,40 +1,38 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useRef } from 'react'
 import { io } from 'socket.io-client'
 import { useAuth } from './AuthContext'
 
 const SocketContext = createContext()
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000'
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 export const SocketProvider = ({ children }) => {
   const { user } = useAuth()
   const [socket, setSocket] = useState(null)
   const [onlineUsers, setOnlineUsers] = useState([])
+  const socketRef = useRef(null)
 
   useEffect(() => {
     if (user) {
-      // Connect to socket server
       const newSocket = io(SOCKET_URL, {
         query: { userId: user._id },
       })
 
+      socketRef.current = newSocket
       setSocket(newSocket)
 
-      // Listen for online users
       newSocket.on('onlineUsers', (users) => {
         setOnlineUsers(users)
       })
 
-      // Cleanup on unmount
       return () => {
         newSocket.disconnect()
+        socketRef.current = null
       }
-    } else {
-      // Disconnect if user logs out
-      if (socket) {
-        socket.disconnect()
-        setSocket(null)
-      }
+    } else if (socketRef.current) {
+      socketRef.current.disconnect()
+      socketRef.current = null
+      setSocket(null)
     }
   }, [user])
 
@@ -45,7 +43,6 @@ export const SocketProvider = ({ children }) => {
   )
 }
 
-// Custom hook to use socket context
 export const useSocket = () => {
   const context = useContext(SocketContext)
   if (!context) {
