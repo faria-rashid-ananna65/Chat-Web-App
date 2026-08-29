@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install --prefix frontend && npm run build --prefix frontend && npm install --prefix backend
-    startCommand: node backend/server.js
+    startCommand: npm start --prefix backend
     envVars:
       - key: MONGODB_URI
         sync: false
