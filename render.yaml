@@ -3,7 +3,7 @@ services:
     name: chitchat
     runtime: node
     plan: free
-    buildCommand: npm install && cd frontend && npm install && npm run build && cd ../backend && npm install
+    buildCommand: npm install --prefix frontend && npm run build --prefix frontend && npm install --prefix backend
     startCommand: node backend/server.js
     envVars:
       - key: MONGODB_URI

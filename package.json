@@ -4,7 +4,7 @@
   "description": "Real-time chat application",
   "private": true,
   "scripts": {
-    "build": "cd frontend && npm install && npm run build",
+    "build": "npm install --prefix frontend && npm run build --prefix frontend && npm install --prefix backend",
     "start": "node backend/server.js"
   },
   "engines": {
