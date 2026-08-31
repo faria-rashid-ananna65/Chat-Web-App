@@ -11,7 +11,9 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CLIENT_URL
-        value: https://chitchat.onrender.com
+        value: https://chitchat-16ca.onrender.com
+      - key: RENDER_EXTERNAL_URL
+        value: https://chitchat-16ca.onrender.com
       - key: IMAGEKIT_PUBLIC_KEY
         sync: false
       - key: IMAGEKIT_PRIVATE_KEY
