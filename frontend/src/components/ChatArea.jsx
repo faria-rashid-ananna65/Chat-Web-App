@@ -209,45 +209,43 @@ const ChatArea = ({ chat, chatType, onBack, onMessageSent, onMessageReceived, on
   return (
     <div className="flex flex-col h-full w-full bg-white dark:bg-gray-800 overflow-hidden">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700/50 px-2 sm:px-3 py-2.5 flex-shrink-0">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <button onClick={onBack} className="md:hidden p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 flex-shrink-0">
-              <FiArrowLeft size={18} />
-            </button>
-            <div className="relative flex-shrink-0">
-              <div className={`w-9 h-9 rounded-full ${getAvatarColor(chat.name || chat.fullName)} flex items-center justify-center overflow-hidden`}>
-                {chat.avatar ? (
-                  <img src={chat.avatar} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-sm text-white font-semibold">
-                    {chat.name?.charAt(0) || chat.fullName?.charAt(0) || 'U'}
-                  </span>
-                )}
-              </div>
-              {isOnline && (
-                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-[1.5px] border-white dark:border-gray-800" />
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700/50 px-2 py-2 flex-shrink-0">
+        <div className="flex items-center">
+          <button onClick={onBack} className="md:hidden p-1.5 mr-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 flex-shrink-0">
+            <FiArrowLeft size={18} />
+          </button>
+          <div className="relative flex-shrink-0 mr-2">
+            <div className={`w-9 h-9 rounded-full ${getAvatarColor(chat.name || chat.fullName)} flex items-center justify-center overflow-hidden`}>
+              {chat.avatar ? (
+                <img src={chat.avatar} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-sm text-white font-semibold">
+                  {chat.name?.charAt(0) || chat.fullName?.charAt(0) || 'U'}
+                </span>
               )}
             </div>
-            <div className="min-w-0 flex-1">
-              <h2 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white leading-tight truncate">
-                {chatType === 'group' ? chat.name : chat.fullName}
-              </h2>
-              <p className="text-xs text-gray-400 dark:text-gray-500 leading-tight truncate">
-                {isTyping ? (
-                  <span className="text-primary-500">Typing...</span>
-                ) : isOnline ? 'Online' : chatType === 'group' ? `${chat.members?.length} members` : 'Offline'}
-              </p>
-            </div>
+            {isOnline && (
+              <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-[1.5px] border-white dark:border-gray-800" />
+            )}
           </div>
-          <div className="flex items-center gap-0.5 flex-shrink-0">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white leading-tight truncate">
+              {chatType === 'group' ? chat.name : chat.fullName}
+            </h2>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-tight truncate">
+              {isTyping ? (
+                <span className="text-primary-500">Typing...</span>
+              ) : isOnline ? 'Online' : chatType === 'group' ? `${chat.members?.length} members` : 'Offline'}
+            </p>
+          </div>
+          <div className="flex items-center gap-1 flex-shrink-0 ml-1">
             <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hidden sm:flex">
               <FiPhone size={16} />
             </button>
             <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hidden sm:flex">
               <FiVideo size={16} />
             </button>
-            <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hidden min-[400px]:flex">
+            <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hidden sm:flex">
               <FiMoreVertical size={16} />
             </button>
           </div>
