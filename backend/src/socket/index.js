@@ -1,6 +1,8 @@
 import { Server } from "socket.io";
 import User from "../models/User.js";
 import Message from "../models/Message.js";
+import Conversation from "../models/Conversation.js";
+import Group from "../models/Group.js";
 
 const onlineUsers = new Map();
 
@@ -49,6 +51,23 @@ export const setupSocket = (server) => {
           fileUrl,
         });
 
+        let conversation = await Conversation.findOne({
+          participants: { $all: [sender, receiver] },
+        });
+
+        if (!conversation) {
+          conversation = await Conversation.create({
+            participants: [sender, receiver],
+          });
+        }
+
+        conversation.lastMessage = message._id;
+
+        const currentCount = conversation.unreadCount.get(receiver) || 0;
+        conversation.unreadCount.set(receiver, currentCount + 1);
+
+        await conversation.save();
+
         const populatedMessage = await Message.findById(message._id)
           .populate("sender", "fullName avatar")
           .lean();
@@ -79,6 +98,8 @@ export const setupSocket = (server) => {
           messageType: messageType || "text",
           fileUrl,
         });
+
+        await Group.findByIdAndUpdate(group, { lastMessage: message._id });
 
         const populatedMessage = await Message.findById(message._id)
           .populate("sender", "fullName avatar")

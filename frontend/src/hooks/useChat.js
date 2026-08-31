@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { messagesAPI, friendsAPI, groupsAPI } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 
 export const useChat = () => {
+  const { user } = useAuth()
   const [conversations, setConversations] = useState([])
   const [groups, setGroups] = useState([])
   const [friends, setFriends] = useState([])
@@ -56,53 +58,67 @@ export const useChat = () => {
   }, [fetchConversations, fetchGroups, fetchFriends])
 
   // Update conversations when new message arrives
-  const updateConversation = (message, isGroup = false) => {
+  const updateConversation = useCallback((message, isGroup = false) => {
     if (isGroup) {
       setGroups((prev) =>
         prev.map((group) =>
           group._id === message.group
             ? { ...group, lastMessage: message }
             : group
-        )
+        ).sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0))
       )
     } else {
-      setConversations((prev) => {
-        const chatId =
-          message.sender._id === selectedChat?._id
-            ? message.receiver
-            : message.sender._id
+      const friendId = message.sender._id === user?._id
+        ? message.receiver
+        : message.sender._id
 
-        const existing = prev.find((c) => c._id === chatId)
+      const friendName = message.sender._id === user?._id
+        ? null
+        : message.sender.fullName
+
+      const friendAvatar = message.sender._id === user?._id
+        ? null
+        : message.sender.avatar
+
+      setConversations((prev) => {
+        const existing = prev.find((c) => c._id === friendId)
 
         if (existing) {
           return prev.map((c) =>
-            c._id === chatId
-              ? { ...c, lastMessage: message, updatedAt: new Date() }
+            c._id === friendId
+              ? {
+                  ...c,
+                  lastMessage: message,
+                  updatedAt: new Date(),
+                  fullName: c.fullName || friendName || 'User',
+                  avatar: c.avatar || friendAvatar,
+                }
               : c
-          ).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+          ).sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0))
         } else {
           return [
             {
-              _id: chatId,
-              fullName: message.sender.fullName,
-              avatar: message.sender.avatar,
+              _id: friendId,
+              fullName: friendName || 'User',
+              avatar: friendAvatar,
               lastMessage: message,
               updatedAt: new Date(),
+              unreadCount: 0,
             },
             ...prev,
           ]
         }
       })
     }
-  }
+  }, [user])
 
-  const markAsRead = (chatId) => {
+  const markAsRead = useCallback((chatId) => {
     setConversations((prev) =>
       prev.map((c) =>
         c._id === chatId ? { ...c, unreadCount: 0 } : c
       )
     )
-  }
+  }, [])
 
   return {
     conversations,

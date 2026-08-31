@@ -19,7 +19,7 @@ import ImagePreviewModal from './ImagePreviewModal'
 import { getAvatarColor } from '../utils/avatarColors'
 import toast from 'react-hot-toast'
 
-const ChatArea = ({ chat, chatType, onBack }) => {
+const ChatArea = ({ chat, chatType, onBack, onMessageSent, onMessageReceived, onMarkAsRead }) => {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
@@ -80,27 +80,35 @@ const ChatArea = ({ chat, chatType, onBack }) => {
         if (message.sender._id === chat._id || message.receiver === chat._id) {
           setMessages((prev) => [...prev, message])
         }
+        if (onMessageReceived) onMessageReceived(message, false)
       }
+    }
+
+    const handleMessageSent = (message) => {
+      if (onMessageSent) onMessageSent(message, false)
     }
 
     const handleReceiveGroupMessage = (message) => {
       if (chatType === 'group' && message.group === chat._id) {
         setMessages((prev) => [...prev, message])
       }
+      if (onMessageReceived) onMessageReceived(message, true)
     }
 
     socket.on('receiveMessage', handleReceiveMessage)
+    socket.on('messageSent', handleMessageSent)
     socket.on('receiveGroupMessage', handleReceiveGroupMessage)
     socket.on('userTyping', ({ userId }) => { if (userId === chat._id) setIsTyping(true) })
     socket.on('userStopTyping', ({ userId }) => { if (userId === chat._id) setIsTyping(false) })
 
     return () => {
       socket.off('receiveMessage', handleReceiveMessage)
+      socket.off('messageSent', handleMessageSent)
       socket.off('receiveGroupMessage', handleReceiveGroupMessage)
       socket.off('userTyping')
       socket.off('userStopTyping')
     }
-  }, [socket, chat._id, chatType])
+  }, [socket, chat._id, chatType, onMessageSent, onMessageReceived])
 
   useEffect(() => {
     if (!socket || !newMessage) return
@@ -198,14 +206,14 @@ const ChatArea = ({ chat, chatType, onBack }) => {
   return (
     <div className="flex flex-col h-full w-full bg-white dark:bg-gray-800 overflow-hidden">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700/50 px-3 py-2.5 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5 min-w-0">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700/50 px-2 sm:px-3 py-2.5 flex-shrink-0">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
             <button onClick={onBack} className="md:hidden p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 flex-shrink-0">
               <FiArrowLeft size={18} />
             </button>
             <div className="relative flex-shrink-0">
-              <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full ${getAvatarColor(chat.name || chat.fullName)} flex items-center justify-center overflow-hidden`}>
+              <div className={`w-9 h-9 rounded-full ${getAvatarColor(chat.name || chat.fullName)} flex items-center justify-center overflow-hidden`}>
                 {chat.avatar ? (
                   <img src={chat.avatar} alt="" className="w-full h-full object-cover" />
                 ) : (
@@ -218,25 +226,25 @@ const ChatArea = ({ chat, chatType, onBack }) => {
                 <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-[1.5px] border-white dark:border-gray-800" />
               )}
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <h2 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white leading-tight truncate">
                 {chatType === 'group' ? chat.name : chat.fullName}
               </h2>
-              <p className="text-xs text-gray-400 dark:text-gray-500 leading-tight">
+              <p className="text-xs text-gray-400 dark:text-gray-500 leading-tight truncate">
                 {isTyping ? (
                   <span className="text-primary-500">Typing...</span>
                 ) : isOnline ? 'Online' : chatType === 'group' ? `${chat.members?.length} members` : 'Offline'}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-0.5 flex-shrink-0">
             <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hidden sm:flex">
               <FiPhone size={16} />
             </button>
             <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hidden sm:flex">
               <FiVideo size={16} />
             </button>
-            <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400">
+            <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hidden min-[400px]:flex">
               <FiMoreVertical size={16} />
             </button>
           </div>

@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Sidebar from '../components/Sidebar'
 import ChatArea from '../components/ChatArea'
 import AddFriendModal from '../components/AddFriendModal'
 import CreateGroupModal from '../components/CreateGroupModal'
 import { useChat } from '../hooks/useChat'
+import { useSocket } from '../context/SocketContext'
+import toast from 'react-hot-toast'
 
 const Chat = () => {
   const [showAddFriend, setShowAddFriend] = useState(false)
@@ -18,7 +20,38 @@ const Chat = () => {
     friends,
     fetchFriends,
     fetchGroups,
+    updateConversation,
+    markAsRead,
   } = useChat()
+  const { socket } = useSocket()
+
+  useEffect(() => {
+    if (!socket) return
+
+    const handleReceiveMessage = (message) => {
+      if (!selectedChat || selectedChat._id !== message.sender._id) {
+        updateConversation(message, false)
+        toast(`New message from ${message.sender.fullName}`, {
+          icon: '💬',
+          duration: 3000,
+        })
+      }
+    }
+
+    const handleReceiveGroupMessage = (message) => {
+      if (!selectedChat || selectedChat._id !== message.group) {
+        updateConversation(message, true)
+      }
+    }
+
+    socket.on('receiveMessage', handleReceiveMessage)
+    socket.on('receiveGroupMessage', handleReceiveGroupMessage)
+
+    return () => {
+      socket.off('receiveMessage', handleReceiveMessage)
+      socket.off('receiveGroupMessage', handleReceiveGroupMessage)
+    }
+  }, [socket, selectedChat, updateConversation])
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-white dark:bg-gray-800">
@@ -55,6 +88,9 @@ const Chat = () => {
             chat={selectedChat}
             chatType={chatType}
             onBack={() => setSelectedChat(null)}
+            onMessageSent={updateConversation}
+            onMessageReceived={updateConversation}
+            onMarkAsRead={markAsRead}
           />
         ) : (
           <div className="flex-1 flex items-center justify-center px-4">
