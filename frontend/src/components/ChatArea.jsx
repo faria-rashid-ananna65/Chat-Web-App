@@ -59,6 +59,9 @@ const ChatArea = ({ chat, chatType, onBack, onMessageSent, onMessageReceived, on
           : await messagesAPI.getGroupMessages(chat._id)
         setMessages(res.data)
         setTimeout(() => scrollToBottom(true), 50)
+        if (onMarkAsRead && chatType === 'private') {
+          onMarkAsRead(chat._id)
+        }
       } catch (error) {
         // silent fail
       } finally {
@@ -66,7 +69,7 @@ const ChatArea = ({ chat, chatType, onBack, onMessageSent, onMessageReceived, on
       }
     }
     fetchMessages()
-  }, [chat._id, chatType, scrollToBottom])
+  }, [chat._id, chatType, scrollToBottom, onMarkAsRead])
 
   useEffect(() => {
     scrollToBottom()

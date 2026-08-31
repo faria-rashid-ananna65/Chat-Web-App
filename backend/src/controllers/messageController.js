@@ -111,7 +111,7 @@ export const getConversations = async (req, res) => {
       participants: req.user._id,
     })
       .populate("participants", "fullName avatar isOnline lastSeen")
-      .populate("lastMessage")
+      .populate({ path: "lastMessage", populate: { path: "sender", select: "fullName" } })
       .sort({ updatedAt: -1 });
 
     const formattedConversations = conversations.map((conv) => {
