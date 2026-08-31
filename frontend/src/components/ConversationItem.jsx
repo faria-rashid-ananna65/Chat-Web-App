@@ -28,18 +28,18 @@ const ConversationItem = ({ conversation, isSelected, onSelect }) => {
   return (
     <div
       onClick={onSelect}
-      className={`flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-colors ${
+      className={`flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-colors ${
         isSelected
           ? 'bg-primary-500 text-white'
           : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
       }`}
     >
       <div className="relative flex-shrink-0">
-        <div className={`w-9 h-9 rounded-full ${getAvatarColor(conversation.fullName)} flex items-center justify-center overflow-hidden`}>
+        <div className={`w-10 h-10 rounded-full ${getAvatarColor(conversation.fullName)} flex items-center justify-center overflow-hidden`}>
           {conversation.avatar ? (
             <img src={conversation.avatar} alt="" className="w-full h-full object-cover" />
           ) : (
-            <span className={`text-xs font-semibold text-white`}>
+            <span className={`text-sm font-semibold text-white`}>
               {conversation.fullName?.charAt(0) || 'U'}
             </span>
           )}
@@ -53,19 +53,19 @@ const ConversationItem = ({ conversation, isSelected, onSelect }) => {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <h3 className={`text-xs font-medium truncate ${isSelected ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+          <h3 className={`text-sm font-medium truncate ${isSelected ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
             {conversation.fullName}
           </h3>
-          <span className={`text-[10px] flex-shrink-0 ml-1 ${isSelected ? 'text-primary-100' : 'text-gray-400'}`}>
+          <span className={`text-[11px] flex-shrink-0 ml-1 ${isSelected ? 'text-primary-100' : 'text-gray-400'}`}>
             {formatTime(conversation.lastMessage?.createdAt || conversation.updatedAt)}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <p className={`text-[11px] truncate ${isSelected ? 'text-primary-100' : 'text-gray-400 dark:text-gray-500'}`}>
+          <p className={`text-xs truncate ${isSelected ? 'text-primary-100' : 'text-gray-400 dark:text-gray-500'}`}>
             {getLastMessage()}
           </p>
           {conversation.unreadCount > 0 && (
-            <span className="ml-1 px-1.5 min-w-[16px] text-center bg-primary-500 text-white text-[9px] rounded-full font-medium">
+            <span className="ml-1 px-1.5 min-w-[18px] text-center bg-primary-500 text-white text-[10px] rounded-full font-medium">
               {conversation.unreadCount}
             </span>
           )}

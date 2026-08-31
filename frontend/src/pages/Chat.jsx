@@ -57,15 +57,15 @@ const Chat = () => {
             onBack={() => setSelectedChat(null)}
           />
         ) : (
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex items-center justify-center px-4">
             <div className="text-center">
-              <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                <span className="text-4xl">💬</span>
+              <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                <span className="text-3xl sm:text-4xl">💬</span>
               </div>
-              <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-700 dark:text-gray-300">
                 Select a chat to start messaging
               </h2>
-              <p className="text-gray-500 dark:text-gray-400 mt-2">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                 Choose from your existing conversations or start a new one
               </p>
             </div>
