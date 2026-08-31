@@ -81,19 +81,29 @@ const ChatArea = ({ chat, chatType, onBack, onMessageSent, onMessageReceived, on
     const handleReceiveMessage = (message) => {
       if (chatType === 'private') {
         if (message.sender._id === chat._id || message.receiver === chat._id) {
-          setMessages((prev) => [...prev, message])
+          setMessages((prev) => {
+            if (prev.some((m) => m._id === message._id)) return prev
+            return [...prev, message]
+          })
         }
         if (onMessageReceived) onMessageReceived(message, false)
       }
     }
 
     const handleMessageSent = (message) => {
+      setMessages((prev) => {
+        if (prev.some((m) => m._id === message._id)) return prev
+        return [...prev, message]
+      })
       if (onMessageSent) onMessageSent(message, false)
     }
 
     const handleReceiveGroupMessage = (message) => {
       if (chatType === 'group' && message.group === chat._id) {
-        setMessages((prev) => [...prev, message])
+        setMessages((prev) => {
+          if (prev.some((m) => m._id === message._id)) return prev
+          return [...prev, message]
+        })
       }
       if (onMessageReceived) onMessageReceived(message, true)
     }

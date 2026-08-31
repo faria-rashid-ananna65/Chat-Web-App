@@ -16,6 +16,12 @@ export const SocketProvider = ({ children }) => {
     if (user) {
       const newSocket = io(SOCKET_URL, {
         query: { userId: user._id },
+        transports: ['polling', 'websocket'],
+        reconnection: true,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 10000,
       })
 
       socketRef.current = newSocket
@@ -23,6 +29,18 @@ export const SocketProvider = ({ children }) => {
 
       newSocket.on('onlineUsers', (users) => {
         setOnlineUsers(users)
+      })
+
+      newSocket.on('connect', () => {
+        console.log('Socket connected')
+      })
+
+      newSocket.on('disconnect', (reason) => {
+        console.log('Socket disconnected:', reason)
+      })
+
+      newSocket.on('connect_error', (err) => {
+        console.error('Socket connection error:', err.message)
       })
 
       return () => {

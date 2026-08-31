@@ -9,10 +9,14 @@ const onlineUsers = new Map();
 export const setupSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL || "http://localhost:5173",
+      origin: process.env.CLIENT_URL
+        ? process.env.CLIENT_URL.split(",").map((o) => o.trim())
+        : "http://localhost:5173",
       credentials: true,
     },
-    transports: ["websocket", "polling"],
+    transports: ["polling", "websocket"],
+    pingInterval: 25000,
+    pingTimeout: 20000,
   });
 
   io.on("connection", async (socket) => {
