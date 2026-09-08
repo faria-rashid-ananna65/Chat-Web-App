@@ -95,7 +95,7 @@ const ChatArea = ({ chat, chatType, onBack, onMessageSent, onMessageReceived, on
         if (prev.some((m) => m._id === message._id)) return prev
         return [...prev, message]
       })
-      if (onMessageSent) onMessageSent(message, false)
+      if (onMessageSent) onMessageSent(message, chatType === 'group')
     }
 
     const handleReceiveGroupMessage = (message) => {
@@ -122,6 +122,15 @@ const ChatArea = ({ chat, chatType, onBack, onMessageSent, onMessageReceived, on
       socket.off('userStopTyping')
     }
   }, [socket, chat._id, chatType, onMessageSent, onMessageReceived])
+
+  useEffect(() => {
+    if (!socket || chatType !== 'group') return
+    const roomId = `group_${chat._id}`
+    socket.emit('joinRoom', { roomId })
+    return () => {
+      socket.emit('leaveRoom', { roomId })
+    }
+  }, [socket, chat._id, chatType])
 
   useEffect(() => {
     if (!socket || !newMessage) return

@@ -110,6 +110,8 @@ export const setupSocket = (server) => {
           .lean();
 
         io.to(`group_${group}`).emit("receiveGroupMessage", populatedMessage);
+
+        socket.emit("messageSent", populatedMessage);
       } catch (error) {
         console.error("Group message error:", error.message);
         socket.emit("messageError", { error: "Failed to send message" });
